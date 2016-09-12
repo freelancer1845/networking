@@ -22,7 +22,7 @@ public class NetworkingConstants {
     public static int INTIAL_PACKAGE_PROTOCOL_ID = 15723895;
 
     /** Default Tickrate. */
-    public static int DEFAULT_TICKRATE = 128;
+    public static int DEFAULT_TICKRATE = 66;
 
     /** Is Network Output Verbose. */
     public static boolean VERBOSE = false;

@@ -9,10 +9,10 @@ package de.riedelgames.core.networking.api.constants;
 public class PackageCodes {
 
     /** Key Down Package Code. */
-    public static final byte KEY_DOWN = 0x00;
+    public static final byte KEY_DOWN = 0x01;
 
     /** Key Up Package Code. */
-    public static final byte KEY_UP = 0x01;
+    public static final byte KEY_UP = 0x02;
 
     private PackageCodes() {
     };
