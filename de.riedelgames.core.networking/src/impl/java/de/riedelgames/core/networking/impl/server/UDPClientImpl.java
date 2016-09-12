@@ -74,7 +74,9 @@ public class UDPClientImpl implements UDPClient {
         packageSender = new PackageSender(datagramSocket, connection, outQueue, tickrate);
         packageReciever = new PackageReciever(datagramSocket, connection, inQueue);
         packageSenderThread = new Thread(packageSender);
+        packageSenderThread.setName("UDP Sender Thread");
         packageRecieverThread = new Thread(packageReciever);
+        packageRecieverThread.setName("UDP Reciver Thread");
         packageSenderThread.start();
         packageRecieverThread.start();
 

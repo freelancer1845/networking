@@ -3,6 +3,7 @@ package de.riedelgames.core.networking.api.server;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.Random;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import de.riedelgames.core.networking.api.constants.PackageCodes;
 import de.riedelgames.core.networking.impl.server.UDPClientImpl;

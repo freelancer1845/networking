@@ -45,4 +45,9 @@ public interface UDPPackage {
      * Acknowledges the package.
      */
     public void acknowledegePackage();
+
+    /**
+     * @return true if the package has no data attached.
+     */
+    public boolean isEmpty();
 }

@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import de.riedelgames.core.networking.api.constants.NetworkingConstants;
+import de.riedelgames.core.networking.api.server.UDPPackage;
 
 /**
  * Utility class for functions concerning packages.
@@ -47,6 +48,18 @@ public class UDPPackageUtils {
             System.out.println("Not Empty Package");
         }
         return isEmpty;
+    }
+
+    public static String getAckBitFieldAsStringMessage(UDPPackage udpPackage) {
+        String message = "AckBitField: ";
+        byte[] ackBitArray = ByteBuffer.allocate(2).putShort(udpPackage.getAckBitField()).array();
+        for (int i = 0; i < ackBitArray.length; i++) {
+            for (int j = 0; j < 8; j++) {
+                message += (i * 8 + j) + ":[" + ((ackBitArray[i] >> j) & 1) + "] ";
+            }
+        }
+        message += "\n";
+        return message;
     }
 
     private UDPPackageUtils() {

@@ -11,13 +11,7 @@ public class LiveTest {
 
     public static void main(String[] args) throws UnknownHostException, InterruptedException {
         System.out.println("Starting Server");
-        UDPServer server;
-        server = new UDPServerImpl();
-        server.start();
-        // Thread.sleep(1000);
-        // UDPClient client = new UDPClientImpl(InetAddress.getLocalHost(),
-        // NetworkingConstants.DEFAULT_PORT);
-        // client.start(true);
+        GameServerWrapper gameServer = new GameServerWrapper();
         while (true) {
             Thread.yield();
         }

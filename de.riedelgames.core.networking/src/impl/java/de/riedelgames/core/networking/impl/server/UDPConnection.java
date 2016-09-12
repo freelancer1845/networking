@@ -27,6 +27,13 @@ public class UDPConnection {
 
     private List<Long> rttTimes = new ArrayList<Long>();
 
+    /** Variables used for stats only. */
+    private int packagesSend = 0;
+
+    private int packagesRecieved = 0;
+
+    private int packagesLost = 0;
+
     public UDPConnection(InetAddress inetAddress, int port) {
         this.inetAddress = inetAddress;
         this.port = port;
@@ -41,7 +48,16 @@ public class UDPConnection {
         }
         sendPackages.put(localSequenceNumber, udpPackage);
         rttQueue.put(localSequenceNumber, System.nanoTime());
+        if (sendPackages.size() > 17) {
+            if (sendPackages.containsKey(localSequenceNumber - 17)) {
+                if (!sendPackages.get(localSequenceNumber - 17).isAcknowledeged()) {
+                    packagesLost++;
+                }
+            }
+            sendPackages.remove(localSequenceNumber - 17);
+        }
         localSequenceNumber++;
+        packagesSend++;
     }
 
     public void addRecievedPackage(UDPPackage udpPackage) {
@@ -57,7 +73,10 @@ public class UDPConnection {
         }
         short ackBitField = udpPackage.getAckBitField();
         processAckBitField(ackBitField);
-
+        if (recievedPackages.size() > 17) {
+            recievedPackages.remove(remoteSequenceNumber - 17);
+        }
+        packagesRecieved++;
     }
 
     public int getLocalSequenceNumber() {
@@ -71,7 +90,10 @@ public class UDPConnection {
     public short getAckBitField() {
         short returnShort = 0;
         for (int i = 0; i < Short.SIZE; i++) {
-            if (recievedPackages.containsKey(localSequenceNumber - Short.SIZE + i - 1)) {
+            if (recievedPackages.containsKey(remoteSequenceNumber - Short.SIZE + i - 1)) {
+                if (remoteSequenceNumber - Short.SIZE + i - 1 == 20) {
+                    continue;
+                }
                 returnShort |= (1 << i);
             }
         }
@@ -126,9 +148,9 @@ public class UDPConnection {
     public String getStats() {
         String message = "### Network Status ###";
 
-        message += "Packages Send: " + sendPackages.size() + "\n";
+        message += "Packages Send: " + packagesSend + "\n";
         message += "Local Sequence Number: " + localSequenceNumber + "\n";
-        message += "Packages Recived: " + recievedPackages.size() + "\n";
+        message += "Packages Recived: " + packagesRecieved + "\n";
         message += "Remote Sequence Number: " + remoteSequenceNumber + "\n";
         message += "RTT: " + this.getCurrentRTT() + "\n";
         short ackBitField = this.getAckBitField();
@@ -140,6 +162,7 @@ public class UDPConnection {
             }
         }
         message += "\n";
+        message += "Packages Lost: " + packagesLost;
 
         message += "\n";
         return message;

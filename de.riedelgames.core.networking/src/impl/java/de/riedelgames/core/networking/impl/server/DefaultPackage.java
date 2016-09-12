@@ -47,7 +47,11 @@ public class DefaultPackage implements UDPPackage {
         this.sequenceNumber = connection.getLocalSequenceNumber();
         this.ack = connection.getRemoteSequenceNumber();
         this.ackBitField = connection.getAckBitField();
-        this.data = data;
+        if (data == null) {
+            this.data = new byte[0];
+        } else {
+            this.data = data;
+        }
 
     }
 
@@ -95,6 +99,18 @@ public class DefaultPackage implements UDPPackage {
     @Override
     public byte[] getDataArray() {
         return this.data;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        boolean returnValue = true;
+        for (int i = 0; i < data.length; i++) {
+            returnValue |= data[i] == 0;
+            if (!returnValue) {
+                break;
+            }
+        }
+        return returnValue;
     }
 
 }

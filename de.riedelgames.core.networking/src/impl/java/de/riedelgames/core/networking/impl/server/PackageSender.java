@@ -5,6 +5,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.concurrent.BlockingQueue;
 
+import de.riedelgames.core.networking.api.constants.NetworkingConstants;
 import de.riedelgames.core.networking.api.server.UDPPackage;
 
 public class PackageSender implements Runnable {
@@ -37,11 +38,13 @@ public class PackageSender implements Runnable {
             }
             ticks++;
             if (ticks == tickrate) {
-                double timeNeeded = (System.currentTimeMillis() - fpsTimer) / 1000;
-                System.out.println("Time Needed for: " + tickrate + " ticks: " + timeNeeded);
+                if (NetworkingConstants.VERBOSE) {
+                    double timeNeeded = (System.currentTimeMillis() - fpsTimer) / 1000;
+                    System.out.println("Time Needed for: " + tickrate + " ticks: " + timeNeeded);
+                    System.out.println(connection.getStats());
+                    fpsTimer = System.currentTimeMillis();
+                }
                 ticks = 0;
-                System.out.println(connection.getStats());
-                fpsTimer = System.currentTimeMillis();
             }
             lastTime = System.nanoTime();
 
@@ -49,7 +52,7 @@ public class PackageSender implements Runnable {
     }
 
     private void sendDataPackage() {
-        byte[] rawData = outQueue.peek();
+        byte[] rawData = outQueue.poll();
         if (rawData == null) {
             rawData = new byte[0];
         }
