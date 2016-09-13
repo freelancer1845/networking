@@ -8,6 +8,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -64,9 +65,9 @@ public class UDPServerImpl implements UDPServer, Runnable {
 
     @Override
     public void run() {
-        byte[] recievedData = new byte[NetworkingConstants.PACKAGE_SIZE];
         System.out.println("Server Started.");
         while (running) {
+            byte[] recievedData = new byte[NetworkingConstants.PACKAGE_SIZE];
             DatagramPacket recievePacket = new DatagramPacket(recievedData, recievedData.length);
             try {
                 socket.receive(recievePacket);
@@ -98,6 +99,8 @@ public class UDPServerImpl implements UDPServer, Runnable {
                 connection.addRecievedPackage(udpPackage);
                 inQueueMap.get(inetAddress).add(udpPackage.getDataArray());
             }
+            printStream.print(Calendar.getInstance().getTime().toString() + ": ");
+            printStream.print(inetAddress.getHostAddress() + ": ");
             for (int i = 0; i < udpPackage.getNetworkPackage().length; i++) {
                 if (i == 14) {
                     printStream.print(" END OF HEADER: ");
@@ -124,18 +127,26 @@ public class UDPServerImpl implements UDPServer, Runnable {
 
             @Override
             public void run() {
-                long lastTime = System.nanoTime();
                 long visibleTimer = System.currentTimeMillis();
                 while (running) {
+                    long now = System.currentTimeMillis();
+
                     sendPackagesToAllClients();
-                    while ((System.nanoTime() - lastTime) < 1000000000 * 1 / tickrate) {
-                        Thread.yield();
-                    }
                     if (visible && System.currentTimeMillis() - visibleTimer > 1000) {
                         sendVisibilityPackage();
                         visibleTimer = System.currentTimeMillis();
                     }
-                    lastTime = System.nanoTime();
+
+                    long delta = System.currentTimeMillis() - now;
+                    long sleepTime = (long) (1.0f / tickrate * 1000 - delta);
+                    if (sleepTime > 0) {
+                        try {
+                            Thread.sleep(sleepTime);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
                 }
             }
         });
