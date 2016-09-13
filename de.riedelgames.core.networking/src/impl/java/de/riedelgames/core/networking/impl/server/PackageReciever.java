@@ -3,6 +3,7 @@ package de.riedelgames.core.networking.impl.server;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.SocketException;
 import java.util.concurrent.BlockingQueue;
 
 import de.riedelgames.core.networking.api.constants.NetworkingConstants;
@@ -15,6 +16,8 @@ public class PackageReciever implements Runnable {
 
     private final BlockingQueue<byte[]> inQueue;
 
+    private boolean running = true;
+
     public PackageReciever(DatagramSocket socket, UDPConnection connection, BlockingQueue<byte[]> inQueue) {
         this.socket = socket;
         this.connection = connection;
@@ -23,7 +26,7 @@ public class PackageReciever implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
+        while (running) {
             recieveDataPackage();
         }
     }
@@ -33,6 +36,8 @@ public class PackageReciever implements Runnable {
         DatagramPacket packet = new DatagramPacket(responseData, responseData.length);
         try {
             socket.receive(packet);
+        } catch (SocketException e) {
+            // Do nothing
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -45,5 +50,10 @@ public class PackageReciever implements Runnable {
         if (!UDPPackageUtils.isEmpty(packet.getData())) {
             inQueue.add(UDPPackageUtils.getData(packet.getData()));
         }
+    }
+
+    public void stop() {
+        running = false;
+        socket.close();
     }
 }

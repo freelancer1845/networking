@@ -18,6 +18,8 @@ public class PackageSender implements Runnable {
 
     private int tickrate;
 
+    private boolean running = true;
+
     public PackageSender(DatagramSocket socket, UDPConnection connection, BlockingQueue<byte[]> outQueue,
             int tickrate) {
         this.socket = socket;
@@ -31,10 +33,17 @@ public class PackageSender implements Runnable {
         long lastTime = System.nanoTime();
         int ticks = 0;
         long fpsTimer = System.currentTimeMillis();
-        while (true) {
+        while (running) {
+            long now = System.currentTimeMillis();
             sendDataPackage();
-            while ((System.nanoTime() - lastTime) < 1000000000 * 1 / tickrate) {
-                Thread.yield();
+            long delta = System.currentTimeMillis() - now;
+            long sleepTime = (long) (1.0 / tickrate * 1000 - delta);
+            if (sleepTime > 0) {
+                try {
+                    Thread.sleep(sleepTime);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
             ticks++;
             if (ticks == tickrate) {
@@ -73,6 +82,10 @@ public class PackageSender implements Runnable {
 
     public void setTickrate(int tickrate) {
         this.tickrate = tickrate;
+    }
+
+    public void stop() {
+        this.running = false;
     }
 
 }

@@ -85,9 +85,8 @@ public class UDPClientImpl implements UDPClient {
     @Override
     public void stop() {
         if (packageSenderThread != null) {
-            packageSenderThread.interrupt();
-            packageRecieverThread.interrupt();
-            datagramSocket.close();
+            packageSender.stop();
+            packageReciever.stop();
         } else {
             throw new RuntimeException("Server thread not created!");
         }

@@ -48,13 +48,13 @@ public class UDPConnection {
         }
         sendPackages.put(localSequenceNumber, udpPackage);
         rttQueue.put(localSequenceNumber, System.nanoTime());
-        if (sendPackages.size() > 17) {
-            if (sendPackages.containsKey(localSequenceNumber - 17)) {
+        if (sendPackages.size() > 200) {
+            if (sendPackages.containsKey(localSequenceNumber - 200)) {
                 if (!sendPackages.get(localSequenceNumber - 17).isAcknowledeged()) {
                     packagesLost++;
                 }
             }
-            sendPackages.remove(localSequenceNumber - 17);
+            sendPackages.remove(localSequenceNumber - 200);
         }
         localSequenceNumber++;
         packagesSend++;
@@ -73,8 +73,8 @@ public class UDPConnection {
         }
         short ackBitField = udpPackage.getAckBitField();
         processAckBitField(ackBitField);
-        if (recievedPackages.size() > 17) {
-            recievedPackages.remove(remoteSequenceNumber - 17);
+        if (recievedPackages.size() > 200) {
+            recievedPackages.remove(remoteSequenceNumber - 200);
         }
         packagesRecieved++;
     }
@@ -137,8 +137,6 @@ public class UDPConnection {
                 value = (value + rttTimes.get(i)) / 2;
             }
             return value / 1000000;
-            // return rttTimes.stream().mapToLong(val ->
-            // val).average().getAsDouble() / 1000000;
         } else {
             return -1;
         }

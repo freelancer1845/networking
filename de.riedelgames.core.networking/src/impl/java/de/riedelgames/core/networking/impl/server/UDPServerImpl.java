@@ -41,6 +41,9 @@ public class UDPServerImpl implements UDPServer, Runnable {
     /** Datagram Socket used by the server. */
     private DatagramSocket socket;
 
+    /** Boolean, server running. */
+    private boolean running;
+
     /** Map that saves the connection corresponding to a inet address. */
     private final ConcurrentMap<InetAddress, UDPConnection> connectionsMap = new ConcurrentHashMap<InetAddress, UDPConnection>();
 
@@ -63,10 +66,12 @@ public class UDPServerImpl implements UDPServer, Runnable {
     public void run() {
         byte[] recievedData = new byte[NetworkingConstants.PACKAGE_SIZE];
         System.out.println("Server Started.");
-        while (true) {
+        while (running) {
             DatagramPacket recievePacket = new DatagramPacket(recievedData, recievedData.length);
             try {
                 socket.receive(recievePacket);
+            } catch (SocketException e) {
+                // Do nothing.
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -110,6 +115,7 @@ public class UDPServerImpl implements UDPServer, Runnable {
         } catch (SocketException e) {
             e.printStackTrace();
         }
+        running = true;
 
         serverThread = new Thread(this);
         serverThread.setName("Server Reciver Thread");
@@ -120,7 +126,7 @@ public class UDPServerImpl implements UDPServer, Runnable {
             public void run() {
                 long lastTime = System.nanoTime();
                 long visibleTimer = System.currentTimeMillis();
-                while (true) {
+                while (running) {
                     sendPackagesToAllClients();
                     while ((System.nanoTime() - lastTime) < 1000000000 * 1 / tickrate) {
                         Thread.yield();
@@ -149,8 +155,7 @@ public class UDPServerImpl implements UDPServer, Runnable {
     @Override
     public void stop() {
         if (serverThread != null) {
-            serverThread.interrupt();
-            outBoundThread.interrupt();
+            running = false;
             socket.close();
         } else {
             throw new RuntimeException("Server thread not created!");
