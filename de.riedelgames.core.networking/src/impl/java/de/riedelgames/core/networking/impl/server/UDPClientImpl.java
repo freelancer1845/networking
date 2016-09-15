@@ -1,17 +1,13 @@
 package de.riedelgames.core.networking.impl.server;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
-import java.nio.ByteBuffer;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import de.riedelgames.core.networking.api.constants.NetworkingConstants;
 import de.riedelgames.core.networking.api.server.UDPClient;
-import de.riedelgames.core.networking.api.server.UDPPackage;
 
 public class UDPClientImpl implements UDPClient {
 
@@ -60,14 +56,16 @@ public class UDPClientImpl implements UDPClient {
     }
 
     @Override
-    public void start(int tick) {
+    public boolean start(int tick) {
 
         tickrate = tick;
         if (datagramSocket == null) {
             try {
                 datagramSocket = new DatagramSocket(port);
             } catch (SocketException e) {
+                System.out.println("Couldn't start client. Creating socket failed!");
                 e.printStackTrace();
+                return false;
             }
         }
 
@@ -79,6 +77,7 @@ public class UDPClientImpl implements UDPClient {
         packageRecieverThread.setName("UDP Reciver Thread");
         packageSenderThread.start();
         packageRecieverThread.start();
+        return true;
 
     }
 

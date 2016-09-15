@@ -6,8 +6,10 @@ public interface UDPServer {
 
     /**
      * Starts the server.
+     * 
+     * @return If successful.
      */
-    public void start();
+    public boolean start();
 
     /**
      * Stops the server.

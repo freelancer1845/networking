@@ -3,6 +3,7 @@ package de.riedelgames.core.networking.api.server;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
+
 import de.riedelgames.core.networking.api.constants.PackageCodes;
 import de.riedelgames.core.networking.impl.server.UDPServerImpl;
 
@@ -24,8 +25,8 @@ public class GameServerWrapper {
         this.udpServer = new UDPServerImpl();
     }
 
-    public void startServer() {
-        udpServer.start();
+    public boolean startServer() {
+        return udpServer.start();
     }
 
     public void stopServer() {

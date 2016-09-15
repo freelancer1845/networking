@@ -9,8 +9,10 @@ public interface UDPClient {
 
     /**
      * Starts the client thread with a specified tick.
+     * 
+     * @return If successful.
      */
-    public void start(int tick);
+    public boolean start(int tick);
 
     /** Stops the client thread. */
     public void stop();

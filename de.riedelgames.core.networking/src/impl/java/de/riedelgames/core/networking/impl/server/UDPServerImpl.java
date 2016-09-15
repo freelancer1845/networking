@@ -112,13 +112,15 @@ public class UDPServerImpl implements UDPServer, Runnable {
     }
 
     @Override
-    public void start() {
+    public boolean start() {
         try {
             socket = new DatagramSocket(port);
+            running = true;
         } catch (SocketException e) {
+            System.out.println("Couldn't start server. Creating socket failed!");
             e.printStackTrace();
+            return false;
         }
-        running = true;
 
         serverThread = new Thread(this);
         serverThread.setName("Server Reciver Thread");
@@ -160,6 +162,7 @@ public class UDPServerImpl implements UDPServer, Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return true;
 
     }
 
