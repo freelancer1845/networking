@@ -87,17 +87,20 @@ public class UDPServerImpl implements UDPServer, Runnable {
                     UDPConnection connection = new UDPConnection(inetAddress, recievedPort);
                     System.out.println("Client Connected: " + inetAddress.getHostAddress());
                     connectionsMap.put(inetAddress, connection);
-                    inQueueMap.put(inetAddress, new ArrayBlockingQueue<byte[]>(500));
-                    outQueueMap.put(inetAddress, new ArrayBlockingQueue<byte[]>(500));
+                    inQueueMap.put(inetAddress, new ArrayBlockingQueue<byte[]>(NetworkingConstants.MAXIMUM_QUEUE_SIZE));
+                    outQueueMap.put(inetAddress,
+                            new ArrayBlockingQueue<byte[]>(NetworkingConstants.MAXIMUM_QUEUE_SIZE));
                     connection.addRecievedPackage(udpPackage);
                     if (!udpPackage.isEmpty()) {
-                        inQueueMap.get(inetAddress).add(udpPackage.getDataArray());
+                        addPackageToQueue(inQueueMap.get(inetAddress), udpPackage);
                     }
                 }
             } else {
                 UDPConnection connection = connectionsMap.get(inetAddress);
                 connection.addRecievedPackage(udpPackage);
-                inQueueMap.get(inetAddress).add(udpPackage.getDataArray());
+                if (!udpPackage.isEmpty()) {
+                    addPackageToQueue(inQueueMap.get(inetAddress), udpPackage);
+                }
             }
             printStream.print(Calendar.getInstance().getTime().toString() + ": ");
             printStream.print(inetAddress.getHostAddress() + ": ");
@@ -148,7 +151,6 @@ public class UDPServerImpl implements UDPServer, Runnable {
                             e.printStackTrace();
                         }
                     }
-
                 }
             }
         });
@@ -252,5 +254,12 @@ public class UDPServerImpl implements UDPServer, Runnable {
     @Override
     public void setServerOpen(boolean open) {
         this.open = open;
+    }
+
+    private void addPackageToQueue(ArrayBlockingQueue<byte[]> queue, UDPPackage udpPackage) {
+        if (queue.size() == NetworkingConstants.MAXIMUM_QUEUE_SIZE) {
+            queue.poll();
+        }
+        queue.add(udpPackage.getDataArray());
     }
 }

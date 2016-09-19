@@ -103,14 +103,14 @@ public class DefaultPackage implements UDPPackage {
 
     @Override
     public boolean isEmpty() {
-        boolean returnValue = true;
+        boolean returnValue = false;
         for (int i = 0; i < data.length; i++) {
-            returnValue |= data[i] == 0;
-            if (!returnValue) {
+            returnValue |= data[i] != 0;
+            if (returnValue) {
                 break;
             }
         }
-        return returnValue;
+        return !returnValue;
     }
 
 }

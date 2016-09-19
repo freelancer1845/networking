@@ -24,6 +24,9 @@ public class NetworkingConstants {
     /** Default Tickrate. */
     public static int DEFAULT_TICKRATE = 66;
 
+    /** Maximum size for queue. */
+    public static int MAXIMUM_QUEUE_SIZE = 500;
+
     /** Is Network Output Verbose. */
     public static boolean VERBOSE = false;
 

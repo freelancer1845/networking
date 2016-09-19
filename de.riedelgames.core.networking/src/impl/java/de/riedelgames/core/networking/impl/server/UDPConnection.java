@@ -3,9 +3,11 @@ package de.riedelgames.core.networking.impl.server;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import de.riedelgames.core.networking.api.server.UDPPackage;
 
@@ -15,7 +17,7 @@ public class UDPConnection {
 
     private final int port;
 
-    private int localSequenceNumber;
+    private int localSequenceNumber = new Random().nextInt();
 
     private int remoteSequenceNumber;
 
@@ -56,7 +58,7 @@ public class UDPConnection {
             }
             sendPackages.remove(localSequenceNumber - 200);
         }
-        localSequenceNumber++;
+        localSequenceNumber = getIncreasedSequenceNumber(localSequenceNumber);
         packagesSend++;
     }
 
@@ -69,7 +71,10 @@ public class UDPConnection {
         int ack = udpPackage.getAck();
         if (sendPackages.containsKey(ack)) {
             sendPackages.get(ack).acknowledegePackage();
-            addRttValueToMean(System.nanoTime() - rttQueue.get(ack));
+            if (rttQueue.containsKey(ack)) {
+                addRttValueToMean(System.nanoTime() - rttQueue.get(ack));
+            }
+
         }
         short ackBitField = udpPackage.getAckBitField();
         processAckBitField(ackBitField);
@@ -89,11 +94,10 @@ public class UDPConnection {
 
     public short getAckBitField() {
         short returnShort = 0;
+        int sequenceNumberToCheck = remoteSequenceNumber;
         for (int i = 0; i < Short.SIZE; i++) {
-            if (recievedPackages.containsKey(remoteSequenceNumber - Short.SIZE + i - 1)) {
-                if (remoteSequenceNumber - Short.SIZE + i - 1 == 20) {
-                    continue;
-                }
+            sequenceNumberToCheck = getDecreasedSequenceNumber(sequenceNumberToCheck);
+            if (recievedPackages.containsKey(sequenceNumberToCheck)) {
                 returnShort |= (1 << i);
             }
         }
@@ -101,15 +105,16 @@ public class UDPConnection {
     }
 
     private void processAckBitField(short ackBitField) {
+        int currentSequenceNumber = localSequenceNumber;
         for (int i = 0; i < Short.SIZE; i++) {
-            int currentSequenceNumber = localSequenceNumber - Short.SIZE + i - 1;
-            if (currentSequenceNumber < 0) {
-                continue;
-            }
+            currentSequenceNumber = getDecreasedSequenceNumber(currentSequenceNumber);
             if (sendPackages.containsKey(currentSequenceNumber)
                     && !sendPackages.get(currentSequenceNumber).isAcknowledeged() && ((ackBitField >> i) & 1) > 0) {
                 sendPackages.get(currentSequenceNumber).acknowledegePackage();
-                addRttValueToMean(System.nanoTime() - rttQueue.get(currentSequenceNumber));
+
+                if (rttQueue.containsKey(currentSequenceNumber)) {
+                    addRttValueToMean(System.nanoTime() - rttQueue.get(currentSequenceNumber));
+                }
             }
         }
 
@@ -124,17 +129,25 @@ public class UDPConnection {
     }
 
     private void addRttValueToMean(long value) {
-        rttTimes.add(value);
-        if (rttTimes.size() > 100) {
-            rttTimes.remove(0);
+        synchronized (rttTimes) {
+            rttTimes.add(value);
+            if (rttTimes.size() > 100) {
+                rttTimes.remove(0);
+            }
         }
+
     }
 
     public double getCurrentRTT() {
         if (rttTimes.size() > 50) {
-            double value = rttTimes.get(0);
-            for (int i = 1; i < rttTimes.size(); i++) {
-                value = (value + rttTimes.get(i)) / 2;
+            List<Long> rttTimesSnapshot;
+            synchronized (rttTimes) {
+                rttTimesSnapshot = Collections.unmodifiableList(rttTimes);
+            }
+
+            double value = rttTimesSnapshot.get(0);
+            for (int i = 1; i < rttTimesSnapshot.size(); i++) {
+                value = (value + rttTimesSnapshot.get(i)) / 2;
             }
             return value / 1000000;
         } else {
@@ -164,6 +177,26 @@ public class UDPConnection {
 
         message += "\n";
         return message;
+    }
+
+    private int getIncreasedSequenceNumber(int sequenceNumber) {
+        int returnValue;
+        if (sequenceNumber == Integer.MAX_VALUE) {
+            returnValue = Integer.MIN_VALUE;
+        } else {
+            returnValue = sequenceNumber + 1;
+        }
+        return returnValue;
+    }
+
+    private int getDecreasedSequenceNumber(int sequenceNumber) {
+        int returnValue = 0;
+        if (returnValue == Integer.MIN_VALUE) {
+            returnValue = Integer.MAX_VALUE;
+        } else {
+            returnValue = sequenceNumber - 1;
+        }
+        return returnValue;
     }
 
 }
