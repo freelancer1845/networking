@@ -12,13 +12,21 @@ public class PackageReciever implements Runnable {
 
     private final DatagramSocket socket;
 
-    private final UDPConnection connection;
+    private final UdpConnection connection;
 
     private final BlockingQueue<byte[]> inQueue;
 
     private boolean running = true;
 
-    public PackageReciever(DatagramSocket socket, UDPConnection connection, BlockingQueue<byte[]> inQueue) {
+    /**
+     * Constructor.
+     * 
+     * @param socket that will be used.
+     * @param connection linked to the receiver.
+     * @param inQueue which incoming data is saved to.
+     */
+    public PackageReciever(DatagramSocket socket, UdpConnection connection,
+            BlockingQueue<byte[]> inQueue) {
         this.socket = socket;
         this.connection = connection;
         this.inQueue = inQueue;
@@ -42,8 +50,8 @@ public class PackageReciever implements Runnable {
             e.printStackTrace();
         }
         if (!UDPPackageUtils.isGamePackage(packet.getData())) {
-            System.out.println(
-                    "Recived unexpected Package. Protocol ID: " + UDPPackageUtils.getProtocolId(packet.getData()));
+            System.out.println("Recived unexpected Package. Protocol ID: "
+                    + UDPPackageUtils.getProtocolId(packet.getData()));
             return;
         }
         connection.addRecievedPackage(new DefaultPackage(packet.getData()));

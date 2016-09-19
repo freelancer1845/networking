@@ -12,7 +12,7 @@ public class PackageSender implements Runnable {
 
     private final DatagramSocket socket;
 
-    private final UDPConnection connection;
+    private final UdpConnection connection;
 
     private final BlockingQueue<byte[]> outQueue;
 
@@ -20,8 +20,16 @@ public class PackageSender implements Runnable {
 
     private boolean running = true;
 
-    public PackageSender(DatagramSocket socket, UDPConnection connection, BlockingQueue<byte[]> outQueue,
-            int tickrate) {
+    /**
+     * Constructor.
+     * 
+     * @param socket that will be used.
+     * @param connection that will be used.
+     * @param outQueue containing data to send.
+     * @param tickrate initial tickrate of the sender.
+     */
+    public PackageSender(DatagramSocket socket, UdpConnection connection,
+            BlockingQueue<byte[]> outQueue, int tickrate) {
         this.socket = socket;
         this.connection = connection;
         this.outQueue = outQueue;
@@ -68,8 +76,8 @@ public class PackageSender implements Runnable {
         UDPPackage udpPackage = new DefaultPackage(connection, rawData);
         byte[] packageData = udpPackage.getNetworkPackage();
         try {
-            socket.send(new DatagramPacket(packageData, packageData.length, connection.getInetAddress(),
-                    connection.getPort()));
+            socket.send(new DatagramPacket(packageData, packageData.length,
+                    connection.getInetAddress(), connection.getPort()));
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -24,6 +24,6 @@ public class Keys {
     public static final byte KEY_RIGHT = 0x04;
 
     private Keys() {
-    };
+    }
 
 }

@@ -6,7 +6,7 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import de.riedelgames.core.networking.api.constants.PackageCodes;
-import de.riedelgames.core.networking.impl.server.UDPClientImpl;
+import de.riedelgames.core.networking.impl.server.UdpClientImpl;
 
 /**
  * Object to be used by the game. Wraps all the UDP depended code. May be used
@@ -19,7 +19,7 @@ import de.riedelgames.core.networking.impl.server.UDPClientImpl;
 public class ClientNetworkTunnel {
 
     /** Underlying UDP Client. */
-    private final UDPClient udpClient;
+    private final UdpClient udpClient;
 
     /**
      * 
@@ -29,7 +29,7 @@ public class ClientNetworkTunnel {
      *            to be used.
      */
     public ClientNetworkTunnel(InetAddress inetAddress, int port) {
-        this.udpClient = new UDPClientImpl(inetAddress, port);
+        this.udpClient = new UdpClientImpl(inetAddress, port);
 
         intializeTunnel();
     }

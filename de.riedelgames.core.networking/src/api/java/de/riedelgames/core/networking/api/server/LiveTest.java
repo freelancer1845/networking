@@ -4,7 +4,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import de.riedelgames.core.networking.api.constants.NetworkingConstants;
-import de.riedelgames.core.networking.impl.server.UDPClientImpl;
+import de.riedelgames.core.networking.impl.server.UdpClientImpl;
 import de.riedelgames.core.networking.impl.server.UDPServerImpl;
 
 public class LiveTest {

@@ -46,7 +46,7 @@ public class UDPServerImpl implements UDPServer, Runnable {
     private boolean running;
 
     /** Map that saves the connection corresponding to a inet address. */
-    private final ConcurrentMap<InetAddress, UDPConnection> connectionsMap = new ConcurrentHashMap<InetAddress, UDPConnection>();
+    private final ConcurrentMap<InetAddress, UdpConnection> connectionsMap = new ConcurrentHashMap<InetAddress, UdpConnection>();
 
     /**
      * HashMap that has a ArrayBlockingQueue (OutBound Packages) for every
@@ -84,7 +84,7 @@ public class UDPServerImpl implements UDPServer, Runnable {
             UDPPackage udpPackage = new DefaultPackage(recievePacket.getData());
             if (!connectionsMap.containsKey(inetAddress)) {
                 if (open) {
-                    UDPConnection connection = new UDPConnection(inetAddress, recievedPort);
+                    UdpConnection connection = new UdpConnection(inetAddress, recievedPort);
                     System.out.println("Client Connected: " + inetAddress.getHostAddress());
                     connectionsMap.put(inetAddress, connection);
                     inQueueMap.put(inetAddress, new ArrayBlockingQueue<byte[]>(NetworkingConstants.MAXIMUM_QUEUE_SIZE));
@@ -96,7 +96,7 @@ public class UDPServerImpl implements UDPServer, Runnable {
                     }
                 }
             } else {
-                UDPConnection connection = connectionsMap.get(inetAddress);
+                UdpConnection connection = connectionsMap.get(inetAddress);
                 connection.addRecievedPackage(udpPackage);
                 if (!udpPackage.isEmpty()) {
                     addPackageToQueue(inQueueMap.get(inetAddress), udpPackage);
@@ -191,7 +191,7 @@ public class UDPServerImpl implements UDPServer, Runnable {
     }
 
     private void sendSinglePackage(InetAddress inetAdress, byte[] data) {
-        UDPConnection connection = connectionsMap.get(inetAdress);
+        UdpConnection connection = connectionsMap.get(inetAdress);
         UDPPackage outPackage = new DefaultPackage(connection, data);
         byte[] fullPackageData = outPackage.getNetworkPackage();
         try {

@@ -1,6 +1,6 @@
 package de.riedelgames.core.networking.api.server;
 
-public interface UDPClient {
+public interface UdpClient {
 
     /**
      * Starts the client thread with standard tick of 30.

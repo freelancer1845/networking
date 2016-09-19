@@ -11,7 +11,7 @@ import java.util.Random;
 
 import de.riedelgames.core.networking.api.server.UDPPackage;
 
-public class UDPConnection {
+public class UdpConnection {
 
     private final InetAddress inetAddress;
 
@@ -36,7 +36,13 @@ public class UDPConnection {
 
     private int packagesLost = 0;
 
-    public UDPConnection(InetAddress inetAddress, int port) {
+    /**
+     * Constructor.
+     * 
+     * @param inetAddress mapped to this connection.
+     * @param port mapped to this connection.
+     */
+    public UdpConnection(InetAddress inetAddress, int port) {
         this.inetAddress = inetAddress;
         this.port = port;
         recievedPackages = new HashMap<Integer, UDPPackage>();
@@ -44,6 +50,11 @@ public class UDPConnection {
         rttQueue = new HashMap<Integer, Long>();
     }
 
+    /**
+     * Adds this Package to the connection.
+     * 
+     * @param udpPackage package to add.
+     */
     public void addSendPackage(UDPPackage udpPackage) {
         if (localSequenceNumber != udpPackage.getSequenceNumber()) {
             throw new RuntimeException("Error in adding Package. Local Sequence Number set wrong");
@@ -62,6 +73,11 @@ public class UDPConnection {
         packagesSend++;
     }
 
+    /**
+     * Adds this Package to the connection.
+     * 
+     * @param udpPackage package to add.
+     */
     public void addRecievedPackage(UDPPackage udpPackage) {
         int sequenceNumber = udpPackage.getSequenceNumber();
         if (sequenceNumber > remoteSequenceNumber) {
@@ -92,6 +108,11 @@ public class UDPConnection {
         return remoteSequenceNumber;
     }
 
+    /**
+     * Calculates the ack bit field and returns it.
+     * 
+     * @return the ack bit field.
+     */
     public short getAckBitField() {
         short returnShort = 0;
         int sequenceNumberToCheck = remoteSequenceNumber;
@@ -109,7 +130,8 @@ public class UDPConnection {
         for (int i = 0; i < Short.SIZE; i++) {
             currentSequenceNumber = getDecreasedSequenceNumber(currentSequenceNumber);
             if (sendPackages.containsKey(currentSequenceNumber)
-                    && !sendPackages.get(currentSequenceNumber).isAcknowledeged() && ((ackBitField >> i) & 1) > 0) {
+                    && !sendPackages.get(currentSequenceNumber).isAcknowledeged()
+                    && ((ackBitField >> i) & 1) > 0) {
                 sendPackages.get(currentSequenceNumber).acknowledegePackage();
 
                 if (rttQueue.containsKey(currentSequenceNumber)) {
@@ -138,7 +160,12 @@ public class UDPConnection {
 
     }
 
-    public double getCurrentRTT() {
+    /**
+     * Calculates the current RTT.
+     * 
+     * @return the current RTT in ms.
+     */
+    public double getCurrentRtt() {
         if (rttTimes.size() > 50) {
             List<Long> rttTimesSnapshot;
             synchronized (rttTimes) {
@@ -163,7 +190,7 @@ public class UDPConnection {
         message += "Local Sequence Number: " + localSequenceNumber + "\n";
         message += "Packages Recived: " + packagesRecieved + "\n";
         message += "Remote Sequence Number: " + remoteSequenceNumber + "\n";
-        message += "RTT: " + this.getCurrentRTT() + "\n";
+        message += "RTT: " + this.getCurrentRtt() + "\n";
         short ackBitField = this.getAckBitField();
         byte[] ackBitArray = ByteBuffer.allocate(2).putShort(ackBitField).array();
         message += "AckBitField: ";

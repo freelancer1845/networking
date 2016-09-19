@@ -15,6 +15,6 @@ public class PackageCodes {
     public static final byte KEY_UP = 0x02;
 
     private PackageCodes() {
-    };
+    }
 
 }

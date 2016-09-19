@@ -7,9 +7,15 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import de.riedelgames.core.networking.api.constants.NetworkingConstants;
-import de.riedelgames.core.networking.api.server.UDPClient;
+import de.riedelgames.core.networking.api.server.UdpClient;
 
-public class UDPClientImpl implements UDPClient {
+/**
+ * A basic UDP Client.
+ * 
+ * @author Jascha Riedel
+ *
+ */
+public class UdpClientImpl implements UdpClient {
 
     /** Tickrate that the client will run on. */
     private int tickrate = NetworkingConstants.DEFAULT_TICKRATE;
@@ -21,7 +27,7 @@ public class UDPClientImpl implements UDPClient {
     private int port = NetworkingConstants.DEFAULT_PORT;
 
     /** Connection of this client. */
-    private final UDPConnection connection;
+    private final UdpConnection connection;
 
     /** Data queue. */
     private BlockingQueue<byte[]> outQueue = new ArrayBlockingQueue<byte[]>(500);
@@ -41,12 +47,12 @@ public class UDPClientImpl implements UDPClient {
     /** In queue. */
     private BlockingQueue<byte[]> inQueue = new ArrayBlockingQueue<byte[]>(500);
 
-    public UDPClientImpl(InetAddress inetAddress, int port) {
-        this.connection = new UDPConnection(inetAddress, port);
+    public UdpClientImpl(InetAddress inetAddress, int port) {
+        this.connection = new UdpConnection(inetAddress, port);
     }
 
-    public UDPClientImpl(DatagramSocket socket, InetAddress inetAddress, int port) {
-        this.connection = new UDPConnection(inetAddress, port);
+    public UdpClientImpl(DatagramSocket socket, InetAddress inetAddress, int port) {
+        this.connection = new UdpConnection(inetAddress, port);
         this.datagramSocket = socket;
     }
 

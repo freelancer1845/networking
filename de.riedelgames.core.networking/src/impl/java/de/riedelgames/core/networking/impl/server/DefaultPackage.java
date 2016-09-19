@@ -42,7 +42,7 @@ public class DefaultPackage implements UDPPackage {
      * @param data
      *            of the package.
      */
-    public DefaultPackage(UDPConnection connection, byte[] data) {
+    public DefaultPackage(UdpConnection connection, byte[] data) {
         this.protcolId = NetworkingConstants.PROTOCOL_ID;
         this.sequenceNumber = connection.getLocalSequenceNumber();
         this.ack = connection.getRemoteSequenceNumber();

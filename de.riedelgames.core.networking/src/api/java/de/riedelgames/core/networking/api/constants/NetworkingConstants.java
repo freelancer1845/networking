@@ -1,7 +1,6 @@
 package de.riedelgames.core.networking.api.constants;
 
 /**
- * 
  * Class containing all constants related to networking.
  * 
  * @author Jascha Riedel
@@ -31,9 +30,9 @@ public class NetworkingConstants {
     public static boolean VERBOSE = false;
 
     /** UDP Groupname for server detection. */
-    public final static String GROUPNAME = "229.127.12.17";
+    public static final String GROUPNAME = "229.127.12.17";
 
     private NetworkingConstants() {
-    };
+    }
 
 }
