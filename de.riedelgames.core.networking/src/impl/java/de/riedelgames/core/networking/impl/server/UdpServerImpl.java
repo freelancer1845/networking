@@ -19,7 +19,7 @@ import de.riedelgames.core.networking.api.constants.NetworkingConstants;
 import de.riedelgames.core.networking.api.server.UDPPackage;
 import de.riedelgames.core.networking.api.server.UDPServer;
 
-public class UDPServerImpl implements UDPServer, Runnable {
+public class UdpServerImpl implements UDPServer, Runnable {
 
     /** Server open or not. */
     private boolean open = true;
@@ -46,19 +46,22 @@ public class UDPServerImpl implements UDPServer, Runnable {
     private boolean running;
 
     /** Map that saves the connection corresponding to a inet address. */
-    private final ConcurrentMap<InetAddress, UdpConnection> connectionsMap = new ConcurrentHashMap<InetAddress, UdpConnection>();
+    private final ConcurrentMap<InetAddress, UdpConnection> connectionsMap =
+            new ConcurrentHashMap<InetAddress, UdpConnection>();
 
     /**
-     * HashMap that has a ArrayBlockingQueue (OutBound Packages) for every
-     * client identified by its InetAddress.
+     * HashMap that has a ArrayBlockingQueue (OutBound Packages) for every client identified by its
+     * InetAddress.
      */
-    private Map<InetAddress, ArrayBlockingQueue<byte[]>> outQueueMap = new HashMap<InetAddress, ArrayBlockingQueue<byte[]>>();
+    private Map<InetAddress, ArrayBlockingQueue<byte[]>> outQueueMap =
+            new HashMap<InetAddress, ArrayBlockingQueue<byte[]>>();
 
     /**
-     * HashMap that has a ArrayBlockingQueue (InBound Packages) for every client
-     * identified by its InetAddress.
+     * HashMap that has a ArrayBlockingQueue (InBound Packages) for every client identified by its
+     * InetAddress.
      */
-    private Map<InetAddress, ArrayBlockingQueue<byte[]>> inQueueMap = new HashMap<InetAddress, ArrayBlockingQueue<byte[]>>();
+    private Map<InetAddress, ArrayBlockingQueue<byte[]>> inQueueMap =
+            new HashMap<InetAddress, ArrayBlockingQueue<byte[]>>();
 
     private File logFile = new File("Z:/networkLog.txt");
     private PrintStream printStream;
@@ -87,7 +90,8 @@ public class UDPServerImpl implements UDPServer, Runnable {
                     UdpConnection connection = new UdpConnection(inetAddress, recievedPort);
                     System.out.println("Client Connected: " + inetAddress.getHostAddress());
                     connectionsMap.put(inetAddress, connection);
-                    inQueueMap.put(inetAddress, new ArrayBlockingQueue<byte[]>(NetworkingConstants.MAXIMUM_QUEUE_SIZE));
+                    inQueueMap.put(inetAddress,
+                            new ArrayBlockingQueue<byte[]>(NetworkingConstants.MAXIMUM_QUEUE_SIZE));
                     outQueueMap.put(inetAddress,
                             new ArrayBlockingQueue<byte[]>(NetworkingConstants.MAXIMUM_QUEUE_SIZE));
                     connection.addRecievedPackage(udpPackage);
@@ -184,7 +188,7 @@ public class UDPServerImpl implements UDPServer, Runnable {
     }
 
     private void sendPackagesToAllClients() {
-        for (InetAddress inetAddress : connectionsMap.keySet()) {
+        for (InetAddress inetAddress : outQueueMap.keySet()) {
             byte[] outBoundData = outQueueMap.get(inetAddress).poll();
             sendSinglePackage(inetAddress, outBoundData);
         }

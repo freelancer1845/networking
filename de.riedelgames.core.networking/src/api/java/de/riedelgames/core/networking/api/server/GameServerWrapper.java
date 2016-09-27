@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.riedelgames.core.networking.api.constants.PackageCodes;
-import de.riedelgames.core.networking.impl.server.UDPServerImpl;
+import de.riedelgames.core.networking.impl.server.UdpServerImpl;
 
 /**
  * Easy Wrapper class that wraps the UDP code into game specific code.
@@ -22,7 +22,7 @@ public class GameServerWrapper {
     private Map<InetAddress, NetworkDataWrapper> sortedDataMap = new HashMap<InetAddress, NetworkDataWrapper>();
 
     public GameServerWrapper() {
-        this.udpServer = new UDPServerImpl();
+        this.udpServer = new UdpServerImpl();
     }
 
     public boolean startServer() {
