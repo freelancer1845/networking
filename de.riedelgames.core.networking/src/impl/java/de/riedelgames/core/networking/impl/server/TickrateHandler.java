@@ -1,5 +1,7 @@
 package de.riedelgames.core.networking.impl.server;
 
+import de.riedelgames.core.networking.api.constants.NetworkingConstants;
+
 /**
  * This class monitors the tickrate of the connection.
  * 
@@ -115,7 +117,11 @@ public class TickrateHandler {
                 break;
         }
 
-
+        if (NetworkingConstants.VERBOSE) {
+            if (stateSwitch) {
+                System.out.println("Switched Tickrate State to: " + state.toString());
+            }
+        }
 
     }
 

@@ -27,12 +27,11 @@ public class NetworkingConstants {
     public static int MAXIMUM_QUEUE_SIZE = 500;
 
     /** Is Network Output Verbose. */
-    public static boolean VERBOSE = false;
+    public static final boolean VERBOSE = true;
 
     /** UDP Groupname for server detection. */
     public static final String GROUPNAME = "229.127.12.17";
 
-    private NetworkingConstants() {
-    }
+    private NetworkingConstants() {}
 
 }

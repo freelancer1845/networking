@@ -137,6 +137,11 @@ public class UdpServerImpl implements UDPServer, Runnable {
             @Override
             public void run() {
                 long visibleTimer = System.currentTimeMillis();
+
+                int ticks;
+                if (NetworkingConstants.VERBOSE) {
+                    ticks = 0;
+                }
                 while (running) {
                     long now = System.currentTimeMillis();
 
@@ -153,6 +158,14 @@ public class UdpServerImpl implements UDPServer, Runnable {
                             Thread.sleep(sleepTime);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
+                        }
+                    }
+                    if (NetworkingConstants.VERBOSE) {
+                        ticks++;
+                        if (ticks == tickrate) {
+                            for (InetAddress inetAddress : connectionsMap.keySet()) {
+                                System.out.println(connectionsMap.get(inetAddress).getStats());
+                            }
                         }
                     }
                 }
@@ -205,9 +218,7 @@ public class UdpServerImpl implements UDPServer, Runnable {
             e.printStackTrace();
         }
         connection.addSendPackage(outPackage);
-        if (NetworkingConstants.VERBOSE) {
-            System.out.println(connection.getStats());
-        }
+
     }
 
     private void sendVisibilityPackage() {
