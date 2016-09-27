@@ -18,6 +18,8 @@ public class PackageSender implements Runnable {
 
     private int tickrate;
 
+    private TickrateHandler tickrateHandler;
+
     private boolean running = true;
 
     /**
@@ -34,6 +36,7 @@ public class PackageSender implements Runnable {
         this.connection = connection;
         this.outQueue = outQueue;
         this.tickrate = tickrate;
+        tickrateHandler = new TickrateHandler(connection, this);
     }
 
     @Override
@@ -42,6 +45,9 @@ public class PackageSender implements Runnable {
         int ticks = 0;
         long fpsTimer = System.currentTimeMillis();
         while (running) {
+
+            tickrateHandler.update();
+
             long now = System.currentTimeMillis();
             sendDataPackage();
             long delta = System.currentTimeMillis() - now;
