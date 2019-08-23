@@ -22,8 +22,8 @@ sourceSets.all { set ->
 }
 
 sourceSets {
-    api
     impl
+    api
 }
 
 dependencies {
